@@ -14,8 +14,8 @@ function Slide() {
   this.timer = null;
 
   this.settings = {
-    autoPlay: true, // 是否自动播放
-    playTime: 3000, // 播放间隔
+    autoPlay: true,
+    playTime: 3000,
     obj: '#slideBanner'
   };
 }
@@ -27,12 +27,10 @@ Slide.prototype.init = function(parameter) {
   this.oldSlideIndex = this.picLi.length - 1;
   this.ul = this.slideWrap.querySelectorAll('ul')[0];
 
-  // 根据图片自动渲染按钮
   this.eleInit();
 
   this.btnLi = this.slideWrap.querySelectorAll('ol li');
 
-  // 样式渲染
   this.styleInit();
 
   this.bindEvents();

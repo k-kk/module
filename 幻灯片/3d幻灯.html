@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>---</title>
+  <link rel="stylesheet" href="http://static.smartisanos.cn/index/css/main_998f5a0c6c.css">
+</head>
+<style type="text/css">
+ *{
+  margin: 0px; padding: 0;
+ }
+ .wrap{
+  margin: 30px auto;
+  clear: both;
+  width: 1100px; height: 300px;
+  perspective: 3000px;
+  -webkit-perspective: 3000px;
+ }
+ #d3{
+   position: relative;
+   z-index: 1;
+   transform-origin: center center 0
+   -webkit-transform-origin: center center 0
+ }
+ #back{
+  width: 1100px; height: 300px;
+  background: url('http://luckk.me/me/src/img/index/bg.jpg') no-repeat;
+  background-size: 1100px 300px;
+  transform: rotateX(0deg) rotateY(0deg);
+}
+.transition3s{
+  -webkit-transition: .3s;
+  transition: .3s;
+}
+</style>
+<body>
+<section class="wrap">
+  <div id="d3">
+   <div id="back"></div>
+  </div>
+</section>
+</body>
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+
+var $banner = $('#d3');
+var $back = $('#back');
+
+var $parentWidth = 0;
+var $parentHeight = 0;
+var $halfWidth = 0;
+var $halfHeight = 0;
+var $eleLeft = 0;
+var $eleTop = 0;
+
+var maxY = 6; // 图片Y轴最大旋转度
+var maxX = 6; // 图片X轴最大旋转度
+var maxShoadowNum = 70; // 阴影最大面积
+var maxShodowLeft = 10; // 阴影X轴最大引动范围
+var maxShodowTop = 10; // 阴影Y轴最大移动范围
+var shadowColor = 'rgba(0,0,0,.5)';  // 阴影背景色
+
+
+transformCss($back,0,0,0,0,maxShoadowNum);
+
+
+$banner.on('mousemove',function(ev){
+
+  $back.removeClass('transition3s');
+
+  var $this = $(this);
+  var nowX = ev.clientX;
+  var nowY = ev.clientY;
+  var rotateY = 0;
+  var rotateX = 0;
+  var shodowNum = maxShoadowNum;
+  var shodowNumLeft = 0;
+  var shodowNumTop = 0;
+
+  $parentWidth = $this.parent().outerWidth();
+  $parentHeight = $this.parent().outerHeight();
+  $halfWidth = $parentWidth/2;
+  $halfHeight = $parentHeight/2;
+  $eleLeft = $this.parent().offset().left;
+  $eleTop = $this.parent().offset().top;
+
+  if(nowX < $halfWidth) {
+    rotateY = -(maxY - (nowX - $eleLeft) / $halfWidth * maxY);
+    shodowNumLeft = maxShodowLeft- nowX  / $halfWidth * maxShodowLeft;
+  }
+
+  if(nowX > $halfWidth) {
+    rotateY = (nowX - $halfWidth - $eleLeft) / $halfWidth * maxY;
+    shodowNumLeft = -((nowX - $halfWidth - $eleLeft) / $halfWidth * maxShodowLeft);
+  }
+
+  if(nowY < $halfHeight) {
+    rotateX = maxX - (nowY - $eleTop) / $halfHeight * maxX;
+    shodowNumTop = maxShodowTop -  (nowY - $eleTop) / $halfHeight * maxShodowTop;
+  }
+
+  if(nowY > $halfHeight){
+    rotateX =  -(nowY - $halfHeight - $eleTop) / $halfHeight * maxX;
+    shodowNumTop = -((nowY - $halfHeight - $eleTop) / $halfHeight * maxShodowLeft);
+  }
+
+  transformCss($back,rotateX,rotateY,shodowNumLeft,shodowNumTop,maxShoadowNum);
+
+});
+
+$banner.on('mouseout',function(){
+  $back.addClass('transition3s');
+  transformCss($back,0,0,0,0,maxShoadowNum);
+});
+
+
+function transformCss(obj,rotateX, rotateY,shadowX,shadowY,shadowArea){
+  obj.css({
+    WebkitTransform: 'rotateX('+ rotateX +'deg) rotateY('+ rotateY +'deg)',
+    transform: 'rotateX('+ rotateX +'deg) rotateY('+ rotateY +'deg)',
+    WebkitBoxShadow: shadowX + 'px '+ shadowY +'px '+ shadowArea +'px ' + shadowColor,
+    boxShadow: shadowX + 'px '+ shadowY +'px '+ shadowArea +'px ' + shadowColor
+  });
+}
+
+
+</script>
+</html>

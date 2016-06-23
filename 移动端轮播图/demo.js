@@ -11,6 +11,7 @@ function Slide() {
   this.slideWrap = null;
   this.picLi = null;
   this.btnLi = null;
+  this.timer = null;
 
   this.settings = {
     autoPlay: true, // 是否自动播放
@@ -36,6 +37,21 @@ Slide.prototype.init = function(parameter) {
 
   this.bindEvents();
 
+  this.autoPlay();
+};
+
+Slide.prototype.autoPlay = function() {
+
+  if (!this.settings.autoPlay) return;
+
+  var _this = this;
+
+  this.timer = setInterval(function() {
+    _this.slideIndex--;
+    _this.slideIndex = _this.slideIndex % _this.picLi.length;
+    _this.move(_this.slideIndex * _this.screenWidth);
+  }, this.settings.playTime);
+
 };
 
 Slide.prototype.bindEvents = function() {
@@ -43,39 +59,44 @@ Slide.prototype.bindEvents = function() {
   var _this = this;
   var startX = 0;
 
-  this.slideWrap.ontouchstart = function(ev) {
+
+  this.method.bind(this.slideWrap, 'touchstart', function(ev) {
     var touch = ev.changedTouches[0];
     startX = touch.clientX;
     _this.ul.style.transition = '0s';
-  };
+    clearInterval(_this.timer);
+  });
 
-  this.slideWrap.ontouchmove = function(ev) {
+  this.method.bind(this.slideWrap, 'touchmove', function(ev) {
     var touch = ev.changedTouches[0];
-    var num = _this.ul.dataset.num;
+    var num = Number(_this.ul.dataset.num);
     _this.method.transform(_this.ul, touch.clientX - startX + num);
-    console.log(touch.clientX - startX + num);
-  };
+  });
 
-  this.slideWrap.ontouchend = function(ev) {
+  this.method.bind(this.slideWrap, 'touchend', function(ev) {
 
     var touch = ev.changedTouches[0];
     var num = _this.ul.dataset.num;
+
+
     if (Math.abs(startX - touch.clientX) > _this.screenWidth / 3) {
+
       startX - touch.clientX > 0 ? _this.slideIndex-- : _this.slideIndex++;
+
+      if (_this.slideIndex > 0) _this.slideIndex = 0;
+
+      if (_this.picLi.length <= Math.abs(_this.slideIndex)) _this.slideIndex = -(_this.picLi.length - 1);
+
       _this.move(_this.slideIndex * _this.screenWidth);
+
     } else {
       _this.method.transition(_this.ul);
       _this.method.transform(_this.ul, num);
     }
 
-    // console.log(startX - touch.clientX);
+    _this.autoPlay();
 
-    // startX - touch.clientX > 0 ? _this.slideIndex-- : _this.slideIndex++;
-
-    // console.log(_this.slideIndex);
-
-    // _this.move(_this.slideIndex * _this.screenWidth);
-  };
+  });
 
 
 };
@@ -93,15 +114,14 @@ Slide.prototype.move = function(target) {
 Slide.prototype.method = {
   transform: function(obj, target) {
     obj.style.WebkitTranform = 'translate3d(' + target + 'px,0,0)';
-    obj.style.MozTransform = 'translate3d(' + target + 'px,0,0)';
-    obj.style.OTransform = 'translate3d(' + target + 'px,0,0)';
     obj.style.transform = 'translate3d(' + target + 'px,0,0)';
   },
   transition: function(obj) {
     obj.style.WebkitTransition = '.3s ease';
-    obj.style.MozTransition = '.3s ease';
-    obj.style.OTransition = '.3s ease';
     obj.style.transition = '.3s ease';
+  },
+  bind: function(obj, incident, callback) {
+    obj.addEventListener(incident, callback, false);
   }
 };
 

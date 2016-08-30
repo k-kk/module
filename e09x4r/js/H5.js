@@ -67,7 +67,7 @@ var H5 = function(){
             $(this).find('.h5_component').trigger('onLoad');
          }
     });
-    // this.page[0].find('.h5_component').trigger('onLoad');
+    this.page[0].find('.h5_component').trigger('onLoad');
     this.el.show();
 
   };
